@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const demoIdeas = [
     {
         id: 1,
-        title: "AI Powered Attendance Predictor",
+        title: "AI Powered local Predictor",
         description: "Predict student attendance using ML models.",
         tags: ["AI", "ML", "Education"],
         owner: "Saurabh",
@@ -102,5 +102,10 @@ const ExplorePage = () => {
         </div>
     );
 };
+
+
+
+
+const saurabh = 'saurabh sharma ';
 
 export default ExplorePage;
