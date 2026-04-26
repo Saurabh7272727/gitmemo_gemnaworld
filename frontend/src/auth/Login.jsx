@@ -5,74 +5,91 @@ import { useNavigate } from 'react-router-dom';
 const SimpleLogin = () => {
     const navi = useNavigate();
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-            <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-                <div className="text-center mb-8">
-                    <div className="text-2xl mb-2">Gemna GitMemo</div>
-                    <h1 className="text-2xl font-bold text-gray-800">Welcome Back</h1>
-                    <p className="text-gray-500 text-sm mt-1">Login to your account</p>
+        <div className="page-frame flex min-h-screen items-center justify-center">
+            <div className="grid w-full max-w-6xl gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+                <div className="hero-panel hidden p-10 text-white lg:flex lg:flex-col lg:justify-between">
+                    <div>
+                        <p className="eyebrow">Professional student collaboration</p>
+                        <h1 className="mt-4 max-w-xl text-5xl font-bold leading-tight">
+                            Turn every idea, task, and repo into visible proof of work.
+                        </h1>
+                        <p className="muted-copy-dark mt-5 max-w-lg text-base">
+                            GitMemo combines GitHub identity, team execution, contribution logs, and verified achievement into one clean workspace.
+                        </p>
+                    </div>
+                    <div className="grid gap-4 md:grid-cols-3">
+                        {[
+                            ['Projects', 'Structured idea portal'],
+                            ['Tasks', 'Clear execution rhythm'],
+                            ['Proof', 'Contribution history that lasts'],
+                        ].map(([title, copy]) => (
+                            <div key={title} className="metric-card">
+                                <p className="text-sm uppercase tracking-[0.22em] text-teal-300/80">{title}</p>
+                                <p className="mt-3 text-sm text-slate-300">{copy}</p>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Email
-                        </label>
-                        <input
-                            type="email"
-                            placeholder="Enter your email"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
+                <div className="panel mx-auto w-full max-w-xl p-8 md:p-10">
+                    <div className="mb-8 text-center">
+                        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 text-2xl text-teal-700 shadow-inner shadow-teal-100">
+                            <FaGithub />
+                        </div>
+                        <p className="eyebrow">Welcome back</p>
+                        <h1 className="mt-3 text-4xl font-bold text-slate-900">Open your builder workspace</h1>
+                        <p className="muted-copy mt-3">
+                            Use GitHub to continue into your projects, repos, contributions, badges, and team board.
+                        </p>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Password
-                        </label>
-                        <input
-                            type="password"
-                            placeholder="Enter your password"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-700">
+                                Email
+                            </label>
+                            <input
+                                type="email"
+                                placeholder="GitHub email appears after OAuth"
+                                className="input-surface"
+                                disabled
+                            />
+                        </div>
 
-                    <div className="text-right">
-                        <a href="#" className="text-sm text-blue-600 hover:underline">
-                            Forgot password? (coming soon..)
-                        </a>
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-slate-700">
+                                Password
+                            </label>
+                            <input
+                                type="password"
+                                placeholder="GitHub handles sign-in for this build"
+                                className="input-surface"
+                                disabled
+                            />
+                        </div>
+
+                        <div className="rounded-2xl border border-teal-100 bg-teal-50/80 p-4 text-sm text-teal-900">
+                            This prototype uses GitHub OAuth as the primary identity layer.
+                        </div>
                     </div>
 
                     <button
-
-                        className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                        Login
+                        onClick={() => {
+                            window.location.href = 'http://localhost:3000/auth/oauth/login&signup'
+                        }}
+                        className="btn-primary mt-6 w-full"
+                    >
+                        <FaGithub className="text-xl" />
+                        <span>Continue with GitHub</span>
                     </button>
-                </div>
 
-                <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-gray-300"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                        <span className="px-4 bg-white text-gray-500">OR</span>
+                    <div className="mt-6 flex items-center justify-between text-sm text-slate-500">
+                        <span>New here?</span>
+                        <button onClick={() => navi('/signup')} className="font-semibold text-teal-700 transition hover:text-teal-800">
+                            Create account
+                        </button>
                     </div>
                 </div>
-
-                <button
-                    onClick={() => {
-                        window.location.href = 'http://localhost:3000/auth/oauth/login&signup'
-                    }}
-                    className="w-full flex items-center justify-center gap-2 bg-gray-900 text-white py-2 rounded-lg hover:bg-gray-800 transition-colors">
-                    <FaGithub className="text-xl" />
-                    <span>Continue with GitHub</span>
-                </button>
-
-                <p className="text-center text-sm text-gray-600 mt-6">
-                    Don't have an account?{' '}
-                    <a href="/signup" className="text-blue-600 font-medium hover:underline">
-                        Sign up
-                    </a>
-                </p>
             </div>
         </div>
     );

@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 import { Mail, Github, Calendar, Hash } from "lucide-react";
 
 export default function ProfessionalUserProfileCard({ user }) {
-
-
     const formatDate = (date) =>
         new Date(date).toLocaleDateString("en-IN", {
             year: "numeric",
@@ -13,23 +11,24 @@ export default function ProfessionalUserProfileCard({ user }) {
         });
 
     return (
-        <div className="h-fit flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-200 p-6 rounded-md">
+        <div className="panel h-fit p-0">
             <motion.div
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6 }}
-                className="w-full max-w-xl"
+                className="w-full"
             >
-                <div className="rounded-2xl shadow-xl bg-white p-8 space-y-6">
+                <div className="space-y-6 p-6 md:p-8">
                     <div className="flex items-center gap-6">
                         <img
                             src={user.avatar}
                             alt={user.username}
-                            className="h-24 w-24 rounded-full object-cover ring-4 ring-slate-100 shadow-md"
+                            className="h-24 w-24 rounded-[28px] object-cover ring-4 ring-teal-100 shadow-md"
                         />
 
                         <div className="space-y-2">
-                            <h2 className="text-2xl font-bold tracking-tight">
+                            <p className="eyebrow">Synced account</p>
+                            <h2 className="text-3xl font-bold tracking-tight text-slate-900">
                                 {user.username}
                             </h2>
                             <div className="flex items-center gap-2 text-sm text-slate-500">
@@ -39,31 +38,15 @@ export default function ProfessionalUserProfileCard({ user }) {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <InfoItem
-                            icon={<Mail size={16} />}
-                            label="Email"
-                            value={user.email}
-                        />
-                        <InfoItem
-                            icon={<Calendar size={16} />}
-                            label="Created At"
-                            value={formatDate(user.createdAt)}
-                        />
-                        <InfoItem
-                            icon={<Calendar size={16} />}
-                            label="Updated At"
-                            value={formatDate(user.updatedAt)}
-                        />
-                        <InfoItem
-                            icon={<Hash size={16} />}
-                            label="Mongo ID"
-                            value={'**********************'}
-                        />
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <InfoItem icon={<Mail size={16} />} label="Email" value={user.email} />
+                        <InfoItem icon={<Calendar size={16} />} label="Created At" value={formatDate(user.createdAt)} />
+                        <InfoItem icon={<Calendar size={16} />} label="Updated At" value={formatDate(user.updatedAt)} />
+                        <InfoItem icon={<Hash size={16} />} label="Mongo ID" value={'**********************'} />
                     </div>
 
                     <div className="space-y-2">
-                        <h3 className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
+                        <h3 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
                             Badges
                         </h3>
                         <div className="flex flex-wrap gap-2">
@@ -71,9 +54,9 @@ export default function ProfessionalUserProfileCard({ user }) {
                                 user.badges.map((badge, index) => (
                                     <span
                                         key={index}
-                                        className="px-3 py-1 text-xs rounded-xl bg-slate-100"
+                                        className="rounded-xl bg-teal-50 px-3 py-1 text-xs text-teal-800"
                                     >
-                                        {badge}
+                                        {badge?.type || badge}
                                     </span>
                                 ))
                             ) : (
@@ -84,7 +67,7 @@ export default function ProfessionalUserProfileCard({ user }) {
                         </div>
                     </div>
 
-                    <div className="pt-4 border-t text-xs text-slate-400 flex justify-between">
+                    <div className="flex justify-between border-t pt-4 text-xs text-slate-400">
                         <span>Version: {user.__v}</span>
                         <span>Internal ID: {user._id.slice(-6)}</span>
                     </div>
@@ -96,13 +79,13 @@ export default function ProfessionalUserProfileCard({ user }) {
 
 function InfoItem({ icon, label, value }) {
     return (
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-slate-50 hover:bg-slate-100 transition">
-            <div className="text-slate-500 mt-1">{icon}</div>
+        <div className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4 transition hover:bg-white">
+            <div className="mt-1 text-slate-500">{icon}</div>
             <div>
-                <p className="text-xs text-slate-500 uppercase tracking-wide">
+                <p className="text-xs uppercase tracking-wide text-slate-500">
                     {label}
                 </p>
-                <p className="text-sm font-medium break-all">{value}</p>
+                <p className="break-all text-sm font-medium">{value}</p>
             </div>
         </div>
     );

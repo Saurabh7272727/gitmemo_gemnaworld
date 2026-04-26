@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const [isAuth, setIsAuth] = useState(false);
 
     const navi = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const handleScroll = () => {
@@ -18,105 +19,105 @@ const Navbar = () => {
     }, []);
 
     useEffect(() => {
-        if (localStorage.getItem('userId')) {
-            setIsAuth(true);
-        }
+        const syncAuth = () => setIsAuth(Boolean(localStorage.getItem('userId')));
+        syncAuth();
+        window.addEventListener('focus', syncAuth);
+        return () => window.removeEventListener('focus', syncAuth);
+    }, [location.pathname]);
 
-    }, [localStorage.getItem('userId')])
+    const guestLinks = [
+        { label: 'Vision', action: () => window.scrollTo({ top: 0, behavior: 'smooth' }) },
+        { label: 'Login', action: () => navi('/login') },
+        { label: 'Sign Up', action: () => navi('/signup') },
+    ];
+
+    const memberLinks = [
+        { label: 'Workspace', action: () => navi('/gemna_gitmemo.html') },
+        { label: 'Projects', action: () => navi('/gemna_gitmemo.html/idea-portal') },
+        { label: 'Contributions', action: () => navi('/gemna_gitmemo.html/contributions') },
+    ];
 
     return (
         <motion.nav
             initial={{ y: -100 }}
             animate={{ y: 0 }}
-            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
+            className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
+                ? 'border-b border-white/10 bg-slate-950/82 shadow-[0_16px_50px_rgba(2,6,23,0.28)] backdrop-blur-xl'
+                : 'bg-transparent'
                 }`}
         >
-            <div className="container mx-auto px-4">
-                <div className="flex justify-between items-center h-20">
+            <div className="mx-auto flex h-20 w-full max-w-[1440px] items-center justify-between px-4 md:px-6">
+                <div className="flex items-center gap-4">
                     <motion.div
                         onClick={() => navi('/')}
                         whileHover={{ scale: 1.05 }}
-                        className="cursor-pointer"
+                        className="flex cursor-pointer items-center gap-3"
                     >
-                        <h1 className='flex justify-center items-center gap-x-1 cursor-pointer'>
-                            <img src="../../logoSymbol.png" alt="logoimage"
-                                className='w-15 h-12 object-contain'
-                            />
-                            <span className='text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'>
-                                Gemna
-                            </span>
-                        </h1>
+                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+                            <img src="/logoSymbol.png" alt="GitMemo logo" className="h-7 w-7 object-contain" />
+                        </div>
+                        <div>
+                            <p className="font-['Space_Grotesk'] text-xl font-bold text-white">GitMemo</p>
+                            <p className="text-xs uppercase tracking-[0.26em] text-teal-300/80">Build verified work</p>
+                        </div>
                     </motion.div>
-                    {
-                        isAuth ? <div>
-
-                            <motion.a
-                                onClick={() => navi('/gemna_gitmemo.html')}
-                                whileHover={{ scale: 1 }}
-                                className="text-gray-700 hover:text-blue-600 font-medium transition-colors cursor-pointer"
-                            >
-                                Go-to-memo
-                            </motion.a>
-                            <motion.a
-                                onClick={() => {
-                                    localStorage.removeItem('userId');
-                                    setIsAuth(false);
-                                    setTimeout(() => {
-                                        navi('/')
-                                    })
-                                }}
-                                whileHover={{ scale: 1 }}
-                                className="text-gray-700 ml-3 hover:text-blue-600 font-medium transition-colors cursor-pointer"
-                            >
-                                Logout
-                            </motion.a>
-
-                        </div> :
-                            <div className="hidden md:flex space-x-8">
-
-                                <motion.a
-                                    onClick={() => navi('/login')}
-                                    whileHover={{ scale: 1.1 }}
-                                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors cursor-pointer"
-                                >
-                                    login
-                                </motion.a>
-                                <motion.a
-                                    onClick={() => navi("/signup")}
-                                    whileHover={{ scale: 1.1 }}
-                                    className="text-gray-700 hover:text-blue-600 font-medium transition-colors cursor-pointer"
-                                >
-                                    signup
-                                </motion.a>
-                            </div>
-                    }
-
-
-
-                    <button
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="md:hidden text-gray-700"
-                    >
-                        {isOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
-                    </button>
                 </div>
+
+                <div className="hidden items-center gap-3 md:flex">
+                    {(isAuth ? memberLinks : guestLinks).map((link) => (
+                        <button
+                            key={link.label}
+                            onClick={link.action}
+                            className="rounded-full px-4 py-2 text-sm font-medium text-slate-200/88 transition hover:bg-white/6 hover:text-white"
+                        >
+                            {link.label}
+                        </button>
+                    ))}
+                    {isAuth ? (
+                        <button
+                            onClick={() => {
+                                localStorage.removeItem('userId');
+                                localStorage.removeItem('ownerId');
+                                localStorage.removeItem('installation_id');
+                                setIsAuth(false);
+                                navi('/');
+                            }}
+                            className="btn-secondary px-4 py-2 text-sm"
+                        >
+                            Logout
+                        </button>
+                    ) : (
+                        <button onClick={() => navi('/login')} className="btn-primary px-4 py-2 text-sm">
+                            Open Workspace
+                        </button>
+                    )}
+                </div>
+
+                <button
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-2 text-slate-200 md:hidden"
+                >
+                    {isOpen ? <XMarkIcon className="w-6 h-6" /> : <Bars3Icon className="w-6 h-6" />}
+                </button>
             </div>
 
             <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={isOpen ? { opacity: 1, height: 'auto' } : { opacity: 0, height: 0 }}
-                className="md:hidden bg-white border-t"
+                className="mx-4 overflow-hidden rounded-b-[24px] border-x border-b border-white/10 bg-slate-950/96 shadow-[0_22px_70px_rgba(2,6,23,0.32)] backdrop-blur-xl md:hidden"
             >
-                <div className="container mx-auto px-4 py-4">
-                    {['login/signup'].map((item) => (
-                        <a
-                            key={item}
-                            href={`#${item.toLowerCase()}`}
-                            className="block py-2 text-gray-700 hover:text-blue-600"
-                            onClick={() => setIsOpen(false)}
+                <div className="space-y-2 px-4 py-4">
+                    {(isAuth ? memberLinks : guestLinks).map((link) => (
+                        <button
+                            key={link.label}
+                            onClick={() => {
+                                setIsOpen(false);
+                                link.action();
+                            }}
+                            className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-slate-200 transition hover:bg-white/6"
                         >
-                            {item}
-                        </a>
+                            {link.label}
+                        </button>
                     ))}
                 </div>
             </motion.div>

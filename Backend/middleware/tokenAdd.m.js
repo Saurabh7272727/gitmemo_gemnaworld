@@ -1,5 +1,6 @@
 import appAuth from '../config/github.js';
 import GitHubInstallation from '../model/githubApp.model.js';
+import { UserModel } from '../model/oauth.model.js';
 
 const map = new Map();
 
@@ -40,5 +41,41 @@ const tokenAdd = async (req, res, next) => {
     }
 }
 
+// New middleware to authenticate user from localStorage userId
+const authenticateUser = async (req, res, next) => {
+    try {
+        // For API calls from frontend, we need to get userId from somewhere
+        // Since we're using encrypted payloads, we might need to decrypt and get userId
+        // For now, let's assume userId is passed in headers or body
+        const userId = req.headers['x-user-id'] || req.body?.userId || req.query?.userId;
 
-export { tokenAdd };
+        if (!userId) {
+            return res.status(401).json({
+                message: "User authentication required",
+                success: false,
+                status: 401
+            });
+        }
+
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            return res.status(401).json({
+                message: "User not found",
+                success: false,
+                status: 401
+            });
+        }
+
+        req.user = { id: user._id, githubId: user.githubId };
+        next();
+    } catch (error) {
+        return res.status(500).json({
+            message: "Authentication error",
+            success: false,
+            status: 500
+        });
+    }
+}
+
+
+export { tokenAdd, authenticateUser };

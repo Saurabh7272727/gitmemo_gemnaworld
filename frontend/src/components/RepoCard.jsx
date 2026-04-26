@@ -1,25 +1,24 @@
-import { FaCodeBranch, FaEye, FaLock, FaGlobe } from "react-icons/fa";
+import { FaCodeBranch, FaEye, FaGlobe, FaLock } from "react-icons/fa";
 
 export default function RepoCard({ repo }) {
     return (
-        <div className="bg-zinc-900 p-5 rounded-2xl border border-zinc-800 hover:border-green-500 transition-all duration-300 hover:shadow-lg">
-
-            <div className="flex justify-between items-center">
-                <h3 className="text-lg font-semibold text-white">{repo.name}</h3>
+        <div className="panel transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(15,23,42,0.14)]">
+            <div className="flex items-center justify-between">
+                <h3 className="text-xl font-semibold text-slate-900">{repo.name}</h3>
 
                 {repo.visibility === "private" ? (
-                    <FaLock className="text-red-500" />
+                    <FaLock className="text-rose-500" />
                 ) : (
-                    <FaGlobe className="text-green-500" />
+                    <FaGlobe className="text-emerald-600" />
                 )}
             </div>
 
-            <p className="text-zinc-400 text-sm mt-2 line-clamp-2">
+            <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
                 {repo.description || "No description provided."}
             </p>
 
-            <div className="flex justify-between items-center mt-4 text-sm text-zinc-400">
-                <span>{repo.language || "Unknown"}</span>
+            <div className="mt-5 flex items-center justify-between text-sm text-slate-500">
+                <span className="status-pill bg-slate-100 text-slate-700">{repo.language || "Unknown"}</span>
 
                 <div className="flex items-center gap-3">
                     <span className="flex items-center gap-1">

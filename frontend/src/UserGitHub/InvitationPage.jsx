@@ -1,164 +1,106 @@
-import React, { useEffect } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import React from 'react';
+import { useQuery } from '@tanstack/react-query';
+import api from '../api/httpClient.js';
 
 const RepoCard = ({ repo }) => {
     return (
-        <div className="group relative bg-gradient-to-br from-zinc-900 to-zinc-800 
-                    border border-zinc-700 rounded-2xl p-6 
-                    shadow-lg hover:shadow-2xl 
-                    transition-all duration-300 
-                    hover:-translate-y-2">
-
-            {/* Header */}
-            <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-white group-hover:text-blue-400 transition">
-                    {repo.name}
-                </h2>
-
+        <div className="panel transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(15,23,42,0.14)]">
+            <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-xl font-bold text-slate-900">{repo.name}</h2>
                 <span
-                    className={`text-xs px-3 py-1 rounded-full font-medium ${repo.private
-                        ? "bg-red-500/20 text-red-400"
-                        : "bg-green-500/20 text-green-400"
+                    className={`rounded-full px-3 py-1 text-xs font-medium ${repo.private
+                        ? "bg-rose-100 text-rose-700"
+                        : "bg-emerald-100 text-emerald-700"
                         }`}
                 >
                     {repo.private ? "Private" : "Public"}
                 </span>
             </div>
 
-            {/* Description */}
-            <p className="text-zinc-400 text-sm mb-4 line-clamp-2">
+            <p className="mb-4 text-sm text-slate-600">
                 {repo.description || "No description provided."}
             </p>
 
-            {/* Owner */}
-            <div className="flex items-center justify-between text-sm text-zinc-500 mb-4">
-                <span>
-                    Owner ID: <span className="text-zinc-300">{repo.owner}</span>
-                </span>
+            <div className="mb-4 space-y-1 text-xs text-slate-500">
+                <p>Owner ID: <span className="font-medium text-slate-700">{repo.owner}</span></p>
+                <p>Created: <span className="text-slate-700">{new Date(repo.createdAt).toLocaleString()}</span></p>
+                <p>Updated: <span className="text-slate-700">{new Date(repo.updatedAt).toLocaleString()}</span></p>
             </div>
 
-            {/* Dates */}
-            <div className="text-xs text-zinc-500 space-y-1 mb-4">
-                <p>
-                    Created:{" "}
-                    <span className="text-zinc-400">
-                        {new Date(repo.createdAt).toLocaleString()}
-                    </span>
-                </p>
-                <p>
-                    Updated:{" "}
-                    <span className="text-zinc-400">
-                        {new Date(repo.updatedAt).toLocaleString()}
-                    </span>
-                </p>
-            </div>
-
-            {/* Action Button */}
             <a
                 href={repo.html_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block w-full text-center bg-blue-600 hover:bg-blue-700 
-                   text-white font-medium py-2 rounded-xl 
-                   transition duration-300"
+                className="btn-primary w-full"
             >
                 View on GitHub
             </a>
-
-            {/* Glow Effect */}
-            <div className="absolute inset-0 rounded-2xl opacity-0 
-                      group-hover:opacity-100 
-                      bg-gradient-to-r from-blue-500/10 to-purple-500/10 
-                      transition duration-500 pointer-events-none" />
         </div>
     );
 };
 
 const InvitationPage = () => {
+    const ownerId = localStorage.getItem('ownerId');
 
-    if (!localStorage.getItem("ownerId")) {
-        return (<>
-            <div className='w-full h-11 flex justify-center items-center'>
-                Owner ID are missing
+    if (!ownerId) {
+        return (
+            <div className='panel text-center'>
+                Owner ID is missing
             </div>
-        </>)
+        );
     }
 
     const fetchCreatedRepo = async () => {
-        const ownerid = localStorage.getItem("ownerId");
+        const response = await api.get(`/githubapp/access/created/repo/${ownerId}`);
+        return response.data;
+    };
 
-        try {
-            const response = await fetch(`${import.meta.env.VITE_APP_BACKEND_URL}/githubapp/access/created/repo/${ownerid}`, {
-                method: "GET",
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            });
-
-            const result = await response.json();
-            if (result.status === 200) {
-                return result;
-            }
-            throw new Error("error - on try")
-        } catch (error) {
-            throw new Error("error - on catch")
-        }
-    }
-    const { status, data, error, mutate } = useMutation({
-        mutationFn: fetchCreatedRepo,
-        retry: 1,
-        onSuccess: (data) => {
-            console.log("data ==================>", data);
-        }
+    const { data, isLoading, isError, error } = useQuery({
+        queryKey: ['createdRepos', ownerId],
+        queryFn: fetchCreatedRepo,
+        enabled: Boolean(ownerId),
+        retry: 2,
+        staleTime: 60 * 1000,
     });
 
-    useEffect(() => {
-        mutate();
-    }, [])
-
-    if (status === 'pending') {
+    if (isLoading) {
         return (
-            <div className='w-full h-11 flex justify-center items-center'>
-                loading.......
+            <div className='panel text-center'>
+                Loading...
             </div>
-        )
+        );
     }
 
-    if (status === 'error') {
+    if (isError) {
         return (
-            <div className='w-full h-11 flex justify-center items-center'>
-                {error.message}
+            <div className='panel text-center text-rose-600'>
+                {error?.message || 'Unable to fetch repositories.'}
             </div>
-        )
+        );
     }
+
+    const repos = data?.findAllCreatedRepo || [];
 
     return (
-        <>
-            {
-                status === 'idle' && (data?.findAllCreatedRepo?.length > 0) && <div>Function sync</div>
-            }
-            <div className='w-full h-full bg-gray-700'>
-
-                {
-                    status === 'success' && (data?.findAllCreatedRepo?.length > 0) && <div className='w-full h-fit p-4 gap-x-3 bg-black flex justify-center flex-wrap'>
-                        {
-                            data?.findAllCreatedRepo.map((repo) => {
-                                return (
-
-                                    <RepoCard repo={repo} />
-                                )
-                            })
-                        }
-                    </div>
-                }
-                {
-                    status === 'success' && (data?.findAllCreatedRepo?.length == 0) && <div className='w-full h-full bg-black'>
-                        <h1 className='text-white pt-4 pl-4'>No repo</h1>
-                    </div>
-                }
+        <div className='space-y-6'>
+            <div>
+                <p className='eyebrow'>Created repositories</p>
+                <h1 className='mt-2 text-3xl font-bold text-slate-900'>Repos you launched from GitMemo</h1>
+                <p className='muted-copy mt-2'>Track your generated repositories and jump back into GitHub when you need to continue building.</p>
             </div>
-        </>
-    )
-}
+            {repos.length > 0 ? (
+                <div className='grid gap-6 md:grid-cols-2 xl:grid-cols-3'>
+                    {repos.map((repo) => (
+                        <RepoCard key={repo._id} repo={repo} />
+                    ))}
+                </div>
+            ) : (
+                <div className='panel p-6'>
+                    <h1 className='text-slate-900'>No repositories created yet.</h1>
+                </div>
+            )}
+        </div>
+    );
+};
 
 export default InvitationPage

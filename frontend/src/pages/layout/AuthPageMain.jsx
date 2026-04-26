@@ -14,14 +14,18 @@ const AuthPageMain = () => {
     }, []);
 
     return (
-        <>
-            <SizeLayOut>
-                <div className='w-full h-full flex justify-center items-center'>
+        <SizeLayOut>
+            <div className='dashboard-shell min-h-[calc(100vh-9rem)] lg:min-h-[780px]'>
+                <div className='flex min-h-[calc(100vh-9rem)] flex-col lg:min-h-[780px] lg:flex-row'>
                     <Sidebar active={active} setActive={setActive} />
-                    <Outlet />
+                    <div className='flex-1 bg-[radial-gradient(circle_at_top,rgba(20,184,166,0.07),transparent_32%),linear-gradient(180deg,rgba(248,250,252,0.98),rgba(241,245,249,0.96))] text-slate-900'>
+                        <div className='h-full overflow-y-auto p-4 md:p-6 lg:p-8'>
+                            <Outlet />
+                        </div>
+                    </div>
                 </div>
-            </SizeLayOut>
-        </>
+            </div>
+        </SizeLayOut>
     )
 }
 

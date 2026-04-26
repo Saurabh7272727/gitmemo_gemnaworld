@@ -7,14 +7,14 @@ export default function StatsSection() {
     ];
 
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-12">
+        <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
             {stats.map((stat) => (
                 <div
                     key={stat.label}
-                    className="bg-zinc-900 p-6 rounded-2xl border border-zinc-800 text-center"
+                    className="panel-dark text-center"
                 >
-                    <h3 className="text-2xl font-bold text-white">{stat.value}</h3>
-                    <p className="text-zinc-400 mt-2 text-sm">{stat.label}</p>
+                    <h3 className="text-3xl font-bold text-white">{stat.value}</h3>
+                    <p className="mt-2 text-sm uppercase tracking-[0.18em] text-slate-400">{stat.label}</p>
                 </div>
             ))}
         </div>
